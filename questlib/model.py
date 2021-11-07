@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from jsonmapping import *
+from .jsonmapping import *
 
 __all__ = (
     'Chapter',
