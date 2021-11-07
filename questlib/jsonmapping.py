@@ -1,6 +1,6 @@
 import inspect
 import json
-from typing import get_type_hints, Any, Dict, Union
+from typing import get_type_hints, Any, Dict, Union, Optional, Tuple
 
 __all__ = (
     'JsonField',
@@ -32,7 +32,7 @@ class JsonField:
 
 
 class JsonObject:
-    _fields = None
+    _fields: Optional[Tuple[Tuple[str, JsonField], ...]] = None
 
     def _serialize(self) -> Dict[str, Any]:
         if self._fields is None:
