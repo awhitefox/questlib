@@ -3,6 +3,12 @@ from typing import Union, Any, Type
 
 from .jsonmapping import *
 
+__all__ = (
+    'VariableDefinition',
+    'OperationType',
+    'VariableOperation'
+)
+
 
 class VariableDefinition(JsonObject):
     id: str = JsonField()

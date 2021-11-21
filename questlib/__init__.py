@@ -1,3 +1,3 @@
-from .variable import VariableDefinition, VariableOperation, OperationType
-from .condition import Condition, CompareTo, ComparisonType
+from .variable import *
+from .condition import *
 from .chapter import *

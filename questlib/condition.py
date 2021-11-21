@@ -3,6 +3,12 @@ from typing import Any, Union, Type
 
 from .jsonmapping import *
 
+__all__ = (
+    'CompareTo',
+    'ComparisonType',
+    'Condition'
+)
+
 
 class CompareTo(Enum):
     Constant = 'const'
