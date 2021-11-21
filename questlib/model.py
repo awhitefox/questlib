@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from .jsonmapping import *
+from . import VariableDefinition, Condition, VariableOperation
 
 __all__ = (
     'Chapter',
@@ -13,6 +14,7 @@ __all__ = (
 
 class Chapter(JsonObject):
     title: str = JsonField()
+    variables: List[VariableDefinition] = JsonField()
     branches: List['Branch'] = JsonField()
 
 
@@ -31,6 +33,8 @@ class Segment(JsonObject):
 class Option(JsonObject):
     text: str = JsonField()
     goto: 'GotoDestination' = JsonField()
+    conditions: Optional[List[Condition]] = JsonField(remove_if_none=True)
+    operations: Optional[List[VariableOperation]] = JsonField(remove_if_none=True)
 
 
 class GotoDestination(JsonObject):
