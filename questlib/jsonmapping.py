@@ -1,5 +1,6 @@
 import inspect
 import json
+from enum import Enum
 from typing import get_type_hints, Any, Dict, Union, Optional, Tuple
 
 __all__ = (
@@ -45,6 +46,8 @@ class JsonObject:
         def default(x: Any) -> Any:
             if isinstance(x, JsonObject):
                 return x._serialize()
+            if isinstance(x, Enum):
+                return x.value
             return x
         return json.dumps(self, default=default, **kwargs)
 
@@ -72,9 +75,12 @@ class JsonObject:
 
 def _deserialize_object(annotation: Any, o: Any) -> Any:
     if annotation is not None:
-        if inspect.isclass(annotation) and issubclass(annotation, JsonObject):
-            # noinspection PyProtectedMember
-            return annotation._deserialize(o)
+        if inspect.isclass(annotation):
+            if issubclass(annotation, JsonObject):
+                # noinspection PyProtectedMember
+                return annotation._deserialize(o)
+            if issubclass(annotation, Enum):
+                return annotation(o)
         if hasattr(annotation, '__origin__'):
             origin = annotation.__origin__
             args = annotation.__args__
