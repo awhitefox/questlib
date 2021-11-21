@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union, Any
+from typing import Union, Any, Type
 
 from .jsonmapping import *
 
@@ -7,7 +7,7 @@ from .jsonmapping import *
 class VariableDefinition(JsonObject):
     id: str = JsonField()
     name: str = JsonField()
-    initial_value: Union[bool, int, float] = JsonField()
+    initial_value: Union[bool, float] = JsonField()
 
     @property
     def type(self):
@@ -20,6 +20,7 @@ class OperationType(Enum):
     Subtract = '-'
     Multiply = '*'
     Divide = '/'
+    FloorDivide = '//'
     Modulus = '%'
 
     def eval(self, a: Any, b: Any) -> Any:
@@ -33,11 +34,20 @@ class OperationType(Enum):
             return a * b
         if self == OperationType.Divide:
             return a / b
+        if self == OperationType.FloorDivide:
+            return a // b
         if self == OperationType.Modulus:
             return a % b
+
+    def is_available_for(self, t: Type) -> bool:
+        if t is bool:
+            return self == OperationType.Set
+        if t is int or t is float:
+            return True
+        return False
 
 
 class VariableOperation(JsonObject):
     variable_id: str = JsonField()
     type: OperationType = JsonField()
-    value: Union[bool, int, float]
+    value: Union[bool, float] = JsonField()

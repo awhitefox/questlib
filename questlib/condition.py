@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Union
+from typing import Any, Union, Type
 
 from .jsonmapping import *
 
@@ -31,9 +31,16 @@ class ComparisonType(Enum):
         if self == ComparisonType.LessOrEqual:
             return a <= b
 
+    def is_available_for(self, t: Type) -> bool:
+        if t is bool:
+            return self in (ComparisonType.Equal, ComparisonType.NotEqual)
+        if t is int or t is float:
+            return True
+        return False
+
 
 class Condition(JsonObject):
     compare_to: CompareTo = JsonField()
     comparison: ComparisonType = JsonField()
     left: str = JsonField()
-    right: Union[str, int, float, bool] = JsonField()
+    right: Union[str, float, bool] = JsonField()
