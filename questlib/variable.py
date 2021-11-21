@@ -38,5 +38,6 @@ class OperationType(Enum):
 
 
 class VariableOperation(JsonObject):
+    variable_id: str = JsonField()
     type: OperationType = JsonField()
     value: Union[bool, int, float]
