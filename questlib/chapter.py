@@ -21,7 +21,7 @@ class Chapter(JsonObject):
     def __init__(self, title: str):
         self.title = title
         self.variables = []
-        self.branches = []
+        self.branches = [Branch(id_='@endings')]
 
 
 class Branch(JsonObject):
