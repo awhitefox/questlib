@@ -38,7 +38,7 @@ class Branch(JsonObject):
 class Segment(JsonObject):
     id: str = JsonField()
     text: str = JsonField()
-    options: Optional[List['Option']] = JsonField(remove_if_none=True)
+    options: List['Option'] = JsonList(remove_if_empty=True)
 
     def __init__(self, text: str, *, has_options: bool = True, id_: str = ''):
         self.id = id_ or generate_id()
@@ -49,14 +49,14 @@ class Segment(JsonObject):
 class Option(JsonObject):
     text: str = JsonField()
     goto: 'GotoDestination' = JsonField()
-    conditions: Optional[List[Condition]] = JsonField(remove_if_none=True)
-    operations: Optional[List[VariableOperation]] = JsonField(remove_if_none=True)
+    conditions: List[Condition] = JsonList(remove_if_empty=True)
+    operations: List[VariableOperation] = JsonList(remove_if_empty=True)
 
     def __init__(self, text: str, goto: 'GotoDestination'):
         self.text = text
         self.goto = goto
-        self.conditions = None
-        self.operations = None
+        self.conditions = []
+        self.operations = []
 
 
 class GotoDestination(JsonObject):

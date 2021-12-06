@@ -5,6 +5,7 @@ from typing import get_type_hints, Any, Dict, Union, Optional, Tuple
 
 __all__ = (
     'JsonField',
+    'JsonList',
     'JsonObject'
 )
 
@@ -31,6 +32,18 @@ class JsonField:
     def __set__(self, instance, value):
         setattr(instance, self.attr_name, value)
 
+    def default_value(self):
+        return None
+
+
+class JsonList(JsonField):
+    def __init__(self, key: str = '', *, remove_if_none=False, remove_if_empty=False):
+        super(JsonList, self).__init__(key, remove_if_none=remove_if_none)
+        self.remove_if_empty = remove_if_empty
+
+    def default_value(self):
+        return [] if self.remove_if_empty else None
+
 
 class JsonObject:
     _fields: Optional[Tuple[Tuple[str, JsonField], ...]] = None
@@ -38,9 +51,18 @@ class JsonObject:
     def _serialize(self) -> Dict[str, Any]:
         if self._fields is None:
             return {}
-        result = filter(lambda x: not (x[1].__get__(self, None) is None and x[1].remove_if_none), self._fields)
+        result = filter(lambda x: self._check_field(x[1]), self._fields)
         result = map(lambda x: (x[1].key, x[1].__get__(self, None)), result)
         return dict(result)
+
+    def _check_field(self, field: JsonField):
+        value = field.__get__(self, None)
+        if value is not None:
+            if isinstance(field, JsonList) and len(value) == 0 and field.remove_if_empty:
+                return False
+        elif field.remove_if_none:
+            return False
+        return True
 
     def to_json(self, **kwargs) -> str:
         def default(x: Any) -> Any:
@@ -64,7 +86,7 @@ class JsonObject:
                 if obj is not None:
                     value = _deserialize_object(annotation, obj)
                 else:
-                    value = None
+                    value = field.default_value()
                 setattr(c, attr_name, value)
         return c
 
