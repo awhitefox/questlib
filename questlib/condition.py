@@ -50,3 +50,9 @@ class Condition(JsonObject):
     comparison: ComparisonType = JsonField()
     left: str = JsonField()
     right: Union[str, float, bool] = JsonField()
+
+    def __init__(self, compare_to: CompareTo, comparison: ComparisonType, left: str, right: Union[str, float, bool]):
+        self.compare_to = compare_to
+        self.comparison = comparison
+        self.left = left
+        self.right = right

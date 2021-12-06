@@ -1,7 +1,7 @@
-from uuid import uuid4
 from typing import List, Optional
 
 from .jsonmapping import *
+from .utils import generate_id
 from . import VariableDefinition, Condition, VariableOperation
 
 __all__ = (
@@ -66,7 +66,3 @@ class GotoDestination(JsonObject):
     def __init__(self, branch_id: str, segment_id: str):
         self.branch_id = branch_id
         self.segment_id = segment_id
-
-
-def generate_id() -> str:
-    return str(uuid4())
