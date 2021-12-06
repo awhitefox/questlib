@@ -29,9 +29,9 @@ class Branch(JsonObject):
     title: Optional[str] = JsonField(remove_if_none=True)
     segments: List['Segment'] = JsonField()
 
-    def __init__(self, title: str = '', *, id_: str = ''):
+    def __init__(self, title: Optional[str] = None, *, id_: str = ''):
         self.id = id_ or generate_id()
-        self.title = title or self.id
+        self.title = title
         self.segments = []
 
 
