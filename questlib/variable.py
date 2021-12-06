@@ -7,16 +7,18 @@ from .utils import generate_id
 __all__ = (
     'VariableDefinition',
     'OperationType',
-    'VariableOperation'
+    'VariableOperation',
+    'T_VariableValue'
 )
+T_VariableValue = Union[bool, float]
 
 
 class VariableDefinition(JsonObject):
     id: str = JsonField()
     name: str = JsonField()
-    initial_value: Union[bool, float] = JsonField()
+    initial_value: T_VariableValue = JsonField()
 
-    def __init__(self, name: str, initial_value: Union[bool, float]):
+    def __init__(self, name: str, initial_value: T_VariableValue):
         self.id = generate_id()
         self.name = name
         self.initial_value = initial_value
@@ -62,9 +64,9 @@ class OperationType(Enum):
 class VariableOperation(JsonObject):
     variable_id: str = JsonField()
     type: OperationType = JsonField()
-    value: Union[bool, float] = JsonField()
+    value: T_VariableValue = JsonField()
 
-    def __init__(self, variable_id: str, type_: OperationType, value: Union[bool, float]):
+    def __init__(self, variable_id: str, type_: OperationType, value: T_VariableValue):
         self.variable_id = variable_id
         self.type = type_
         self.value = value
