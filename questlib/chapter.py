@@ -21,10 +21,12 @@ class Chapter(JsonObject):
     def __init__(self, title: str):
         self.title = title
         self.variables = []
-        self.branches = [Branch(id_='@endings')]
+        self.branches = [Branch(id_=Branch.ENDINGS_BRANCH_ID)]
 
 
 class Branch(JsonObject):
+    ENDINGS_BRANCH_ID = '@endings'
+
     id: str = JsonField()
     title: Optional[str] = JsonField(remove_if_none=True)
     segments: List['Segment'] = JsonField()
@@ -33,6 +35,10 @@ class Branch(JsonObject):
         self.id = id_ or generate_id()
         self.title = title
         self.segments = []
+
+    @property
+    def is_endings_branch(self) -> bool:
+        return self.id == self.ENDINGS_BRANCH_ID
 
 
 class Segment(JsonObject):
