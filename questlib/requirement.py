@@ -6,7 +6,7 @@ from .jsonmapping import *
 __all__ = (
     'CompareTo',
     'Comparison',
-    'Condition'
+    'Requirement'
 )
 
 
@@ -45,7 +45,7 @@ class Comparison(Enum):
         return False
 
 
-class Condition(JsonObject):
+class Requirement(JsonObject):
     compare_to: CompareTo = JsonField()
     comparison: Comparison = JsonField()
     left: str = JsonField()
