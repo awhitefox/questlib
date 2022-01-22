@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from .jsonmapping import *
 from .utils import generate_id
-from . import VariableDefinition, Condition, VariableOperation
+from . import Variable, Condition, Consequence
 
 __all__ = (
     'Chapter',
@@ -15,7 +15,7 @@ __all__ = (
 
 class Chapter(JsonObject):
     title: str = JsonField()
-    variables: List[VariableDefinition] = JsonField()
+    variables: List[Variable] = JsonField()
     branches: List['Branch'] = JsonField()
 
     def __init__(self, title: str):
@@ -56,7 +56,7 @@ class Option(JsonObject):
     text: str = JsonField()
     goto: 'GotoDestination' = JsonField()
     conditions: List[Condition] = JsonList(remove_if_empty=True)
-    operations: List[VariableOperation] = JsonList(remove_if_empty=True)
+    operations: List[Consequence] = JsonList(remove_if_empty=True)
 
     def __init__(self, text: str, goto: 'GotoDestination'):
         self.text = text
