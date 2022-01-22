@@ -30,12 +30,12 @@ class VariableDefinition(JsonObject):
 
 class OperationType(Enum):
     Set = '='
-    Add = '+'
-    Subtract = '-'
-    Multiply = '*'
-    Divide = '/'
-    FloorDivide = '//'
-    Modulus = '%'
+    Add = '+='
+    Subtract = '-='
+    Multiply = '*='
+    Divide = '/='
+    FloorDivide = '//='
+    Modulus = '%='
 
     def eval(self, a: Any, b: Any) -> Any:
         if self == OperationType.Set:
