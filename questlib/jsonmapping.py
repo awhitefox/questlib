@@ -48,33 +48,28 @@ class JsonList(JsonField):
 class JsonObject:
     _fields: Optional[Tuple[Tuple[str, JsonField], ...]] = None
 
-    def _serialize(self) -> Dict[str, Any]:
+    def serialize(self) -> Dict[str, Any]:
         if self._fields is None:
             return {}
-        result = filter(lambda x: self._check_field(x[1]), self._fields)
-        result = map(lambda x: (x[1].key, x[1].__get__(self, None)), result)
+
+        def check_field(field: JsonField):
+            value = field.__get__(self, None)
+            if value is not None:
+                if isinstance(field, JsonList) and len(value) == 0 and field.remove_if_empty:
+                    return False
+            elif field.remove_if_none:
+                return False
+            return True
+
+        result = filter(lambda x: check_field(x[1]), self._fields)
+        result = map(lambda x: (x[1].key, _serialize_object(x[1].__get__(self, None))), result)
         return dict(result)
 
-    def _check_field(self, field: JsonField):
-        value = field.__get__(self, None)
-        if value is not None:
-            if isinstance(field, JsonList) and len(value) == 0 and field.remove_if_empty:
-                return False
-        elif field.remove_if_none:
-            return False
-        return True
-
     def to_json(self, **kwargs) -> str:
-        def default(x: Any) -> Any:
-            if isinstance(x, JsonObject):
-                return x._serialize()
-            if isinstance(x, Enum):
-                return x.value
-            return x
-        return json.dumps(self, default=default, **kwargs)
+        return json.dumps(self, **kwargs)
 
     @classmethod
-    def _deserialize(cls, d: Dict[str, Any]) -> 'JsonObject':
+    def deserialize(cls, d: Dict[str, Any]) -> 'JsonObject':
         fields = cls._fields
         annotations = get_type_hints(cls)
 
@@ -92,15 +87,26 @@ class JsonObject:
 
     @classmethod
     def from_json(cls, s: str, **kwargs) -> 'JsonObject':
-        return cls._deserialize(json.loads(s, **kwargs))
+        return cls.deserialize(json.loads(s, **kwargs))
+
+
+def _serialize_object(o: Any) -> Any:
+    if isinstance(o, JsonObject):
+        return o.serialize()
+    if isinstance(o, list):
+        return list(map(_serialize_object, o))
+    if isinstance(o, dict):
+        return dict(map(lambda k: (k, _serialize_object(o[k])), o))
+    if isinstance(o, Enum):
+        return o.value
+    return o
 
 
 def _deserialize_object(annotation: Any, o: Any) -> Any:
     if annotation is not None:
         if inspect.isclass(annotation):
             if issubclass(annotation, JsonObject):
-                # noinspection PyProtectedMember
-                return annotation._deserialize(o)
+                return annotation.deserialize(o)
             if issubclass(annotation, Enum):
                 return annotation(o)
         if hasattr(annotation, '__origin__'):
@@ -110,4 +116,6 @@ def _deserialize_object(annotation: Any, o: Any) -> Any:
                 return _deserialize_object(args[0], o)
             if origin is list:
                 return list(map(lambda x: _deserialize_object(args[0], x), o))
+            if origin is dict:
+                return dict(map(lambda k: (k, _deserialize_object(args[1], o[k])), o))
     return o
