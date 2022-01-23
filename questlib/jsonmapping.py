@@ -66,7 +66,7 @@ class JsonObject:
         return dict(result)
 
     def to_json(self, **kwargs) -> str:
-        return json.dumps(self, **kwargs)
+        return json.dumps(self.serialize(), **kwargs)
 
     @classmethod
     def deserialize(cls, d: Dict[str, Any]) -> 'JsonObject':
