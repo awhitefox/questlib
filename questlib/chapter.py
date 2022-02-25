@@ -44,6 +44,7 @@ class Branch(JsonObject):
 class Segment(JsonObject):
     id: str = JsonField()
     text: str = JsonField()
+    image_url: str = JsonField(remove_if_none=True)
     options: List['Option'] = JsonList(remove_if_empty=True)
 
     def __init__(self, text: str, *, has_options: bool = True, id_: str = ''):
