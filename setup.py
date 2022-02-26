@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='questlib',
-    version='0.2',
+    version='0.3',
     author='awhitefox',
     license='MIT',
     packages=['questlib'],
